@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace BarbershopThreadsSync
 {
-    class Program
+    class WaitingRoom
     {
-        static void Main(string[] args)
-        {
 
-        }
     }
 }
