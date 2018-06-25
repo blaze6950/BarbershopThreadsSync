@@ -2,11 +2,71 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BarbershopThreadsSync
 {
+    enum BarberState
+    {
+        Work,
+        Sleep
+    }
+
     class Barber
     {
+        private BarberState _barberState;
+
+        public Barber()
+        {
+        }
+
+        public Barber(BarberState barberState)
+        {
+            _barberState = barberState;
+        }
+
+        public BarberState BarberState { get => _barberState; set => _barberState = value; }
+
+        public async void DoActions(Barbershop barbershop)
+        {
+            if (barbershop.Armchair.CurrentClient != null && _barberState != BarberState.Sleep)
+            {
+                await Task.Factory.StartNew(() => DoWork(barbershop));
+            }
+            else
+            {
+                await Task.Factory.StartNew(() => CheckWaitingRoom(barbershop));
+            }
+        }
+
+        public async void WakeUp(Barbershop barbershop)
+        {
+            await Task.Factory.StartNew(() => DoWork(barbershop));
+            await Task.Factory.StartNew(() => CheckWaitingRoom(barbershop));
+        }
+
+        public void DoWork(Barbershop barbershop)
+        {
+            Console.WriteLine("Парикмахер начинает свою работу с клиентом {0}...", barbershop.Armchair.CurrentClient.Name);
+            Thread.Sleep(5000);
+        }
+
+        public void CheckWaitingRoom(Barbershop barbershop)
+        {
+            //Console.WriteLine("Парикмахер закончил работу с клиентом {0} и направляется в комнату ожидания за следующим клиентом...", barbershop.Armchair.CurrentClient.Name);
+            Thread.Sleep(1000);
+            if (barbershop.WaitingRoom.Chairs.Count > 0)
+            {
+                Console.WriteLine("Парикмахер позвал следующего клиента...", barbershop.Armchair.CurrentClient.Name);
+                Thread.Sleep(1000);
+            }
+            else
+            {
+                Console.WriteLine("Парикмахер не обнаружил клиентов в комнате ожидания и отправляется спать...");
+                Thread.Sleep(1000);
+                _barberState = BarberState.Sleep;
+            }
+        }
     }
 }

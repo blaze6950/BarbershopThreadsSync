@@ -10,7 +10,8 @@ namespace BarbershopThreadsSync
     {
         static void Main(string[] args)
         {
-
+            Barbershop barbershop = new Barbershop();
+            barbershop.Working();
         }
     }
 }
