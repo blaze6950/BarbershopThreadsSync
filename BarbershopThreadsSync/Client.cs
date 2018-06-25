@@ -30,16 +30,17 @@ namespace BarbershopThreadsSync
         public string Name { get => _name; set => _name = value; }
 
         public async void DoActions(Barbershop barbershop)
-        {
+        {            
             await Task.Factory.StartNew(() => CheckBarber(barbershop));
         }
 
         private void CheckBarber(Barbershop barbershop)
         {
-            Console.WriteLine("Клиент {0} проверяет парикмахера...", _name);
+            barbershop.Mutex.WaitOne();
+            Console.WriteLine("Новый клиент {0} проверяет парикмахера...", _name);
             Thread.Sleep(1000);
-            if (barbershop.Barber.BarberState == BarberState.Sleep)
-            {
+            if (barbershop.Barber.BarberState == BarberState.Sleep && barbershop.Armchair.CurrentClient == null)
+            {                
                 WakeUpBarber(barbershop);
             }
             else if (barbershop.Barber.BarberState == BarberState.Work)
@@ -50,13 +51,14 @@ namespace BarbershopThreadsSync
             {
                 throw new Exception("Unknown error! NaN value BarberState variable!");
             }
+            barbershop.Mutex.ReleaseMutex();
         }
 
         private void WakeUpBarber(Barbershop barbershop)
         {
             Console.WriteLine("Клиент {0} будит парикмахера и занимает кресло...", _name);
             Thread.Sleep(1000);
-            barbershop.Barber.WakeUp(barbershop);
+            barbershop.Armchair.CurrentClient = this;
         }
 
         private void DoActionIfBarberIsWorking(Barbershop barbershop)
@@ -87,6 +89,13 @@ namespace BarbershopThreadsSync
         {
             Console.WriteLine("Клиент {0} не нашел свободный стул и уходит...", _name);
             Thread.Sleep(1000);
+        }
+
+        public void LeaveArmChair(Barbershop barbershop)
+        {
+            Console.WriteLine("Клиент {0} подстриженный и довольный идет домой...", _name);
+            Thread.Sleep(1000);
+            barbershop.Armchair.CurrentClient = null;
         }
     }
 }

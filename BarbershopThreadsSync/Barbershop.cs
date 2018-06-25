@@ -36,10 +36,8 @@ namespace BarbershopThreadsSync
         public Mutex Mutex { get => _mutex; set => _mutex = value; }
 
         public void NewClient(Client client)
-        {
-            _mutex.WaitOne();
+        {            
             client.DoActions(this);
-            _mutex.ReleaseMutex();
         }
 
         public void Working()
@@ -47,10 +45,8 @@ namespace BarbershopThreadsSync
             while (true)
             {
                 NewClient(new Client());
-                _mutex.WaitOne();
                 Barber.DoActions(this);
-                _mutex.ReleaseMutex();
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
             }
         }
     }
