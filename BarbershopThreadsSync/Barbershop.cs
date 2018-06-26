@@ -33,7 +33,7 @@ namespace BarbershopThreadsSync
 
         public void NewClient(Client client)
         {            
-            client.DoActions(this);
+            Task.Factory.StartNew(() => client.DoActions(this));
         }
 
         public void Working()
@@ -41,7 +41,7 @@ namespace BarbershopThreadsSync
             while (true)
             {
                 NewClient(ClientFactory.CreateNewClient());
-                Barber.DoActions(this);
+                Task.Factory.StartNew(() => Barber.DoActions(this));// bug
                 Thread.Sleep(5000);
             }
         }

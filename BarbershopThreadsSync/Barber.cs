@@ -29,45 +29,45 @@ namespace BarbershopThreadsSync
 
         public BarberState BarberState { get => _barberState; set => _barberState = value; }
 
-        public async void DoActions(Barbershop barbershop)
+        public void DoActions(Barbershop barbershop)
         {
-            if (barbershop.Armchair.CurrentClient != null && _barberState != BarberState.Sleep)
+            if (barbershop.Armchair.CurrentClient != null)
             {
-                await Task.Factory.StartNew(() => DoWork(barbershop));
+                DoWork(barbershop);
             }
             else
             {
-                await Task.Factory.StartNew(() => CheckWaitingRoom(barbershop));
+                barbershop.WaitingRoom.MutexRoom.WaitOne();
+                if (barbershop.Armchair.CurrentClient != null)
+                {
+                    CheckWaitingRoom(barbershop);
+                }
+                barbershop.WaitingRoom.MutexRoom.ReleaseMutex();
             }            
-        }
-
-        public async void WakeUp(Barbershop barbershop)
-        {
-            await Task.Factory.StartNew(() => DoWork(barbershop));
-        }
+        }        
 
         public void DoWork(Barbershop barbershop)
         {            
-            Console.WriteLine("Парикмахер начинает свою работу с клиентом {0}...", barbershop.Armchair.CurrentClient.Name);
+            Console.WriteLine("B: начинает свою работу с клиентом {0}...\n", barbershop.Armchair.CurrentClient.Name);
             Thread.Sleep(5000);
-            barbershop.Armchair.CurrentClient.LeaveArmChair(barbershop);            
+            Console.WriteLine("B: закончил работу с клиентом {0} и направляется в комнату ожидания за следующим клиентом...\n", barbershop.Armchair.CurrentClient?.Name);
+            barbershop.Armchair.CurrentClient.LeaveArmChair(barbershop);
         }
 
         public void CheckWaitingRoom(Barbershop barbershop)
         {            
             if (barbershop.Armchair.CurrentClient == null)
             {                
-                Console.WriteLine("Парикмахер закончил работу с клиентом {0} и направляется в комнату ожидания за следующим клиентом...", barbershop.Armchair.CurrentClient?.Name);
                 Thread.Sleep(1000);
                 if (barbershop.WaitingRoom.Chairs.Count > 0)
                 {
                     barbershop.Armchair.CurrentClient = barbershop.WaitingRoom.Chairs.Pop();
-                    Console.WriteLine("Парикмахер позвал следующего клиента...", barbershop.Armchair.CurrentClient?.Name);
+                    Console.WriteLine("B: Парикмахер позвал следующего клиента...\n", barbershop.Armchair.CurrentClient?.Name);
                     Thread.Sleep(1000);
                 }
                 else
                 {
-                    Console.WriteLine("Парикмахер не обнаружил клиентов в комнате ожидания и отправляется спать...");
+                    Console.WriteLine("B: Парикмахер не обнаружил клиентов в комнате ожидания и отправляется спать...\n");
                     Thread.Sleep(1000);
                     _barberState = BarberState.Sleep;
                 }                
