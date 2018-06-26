@@ -11,29 +11,25 @@ namespace BarbershopThreadsSync
     {
         private WaitingRoom _waitingRoom;
         private Barber _barber;
-        private Armchair _armchair;
-        private Mutex _mutex;
+        private Armchair _armchair;        
 
         public Barbershop()
         {
             _waitingRoom = new WaitingRoom();
             _barber = new Barber();
-            _armchair = new Armchair();
-            _mutex = new Mutex();
+            _armchair = new Armchair();            
         }
 
         public Barbershop(WaitingRoom waitingRoom, Barber barber, Armchair armchair)
         {
             _waitingRoom = waitingRoom;
             _barber = barber;
-            _armchair = armchair;
-            _mutex = new Mutex();
+            _armchair = armchair;            
         }
 
         public WaitingRoom WaitingRoom { get => _waitingRoom; set => _waitingRoom = value; }
         public Barber Barber { get => _barber; set => _barber = value; }
-        public Armchair Armchair { get => _armchair; set => _armchair = value; }
-        public Mutex Mutex { get => _mutex; set => _mutex = value; }
+        public Armchair Armchair { get => _armchair; set => _armchair = value; }        
 
         public void NewClient(Client client)
         {            
@@ -44,7 +40,7 @@ namespace BarbershopThreadsSync
         {
             while (true)
             {
-                NewClient(new Client());
+                NewClient(ClientFactory.CreateNewClient());
                 Barber.DoActions(this);
                 Thread.Sleep(5000);
             }

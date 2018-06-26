@@ -10,26 +10,21 @@ namespace BarbershopThreadsSync
     class WaitingRoom
     {
         private Stack<Client> _chairs;
-        //private Semaphore _semaphore;
+        private Mutex _mutexRoom;
 
         public WaitingRoom()
         {
             _chairs = new Stack<Client>();
-            //_semaphore = new Semaphore(_chairs.Count, 3);
+            _mutexRoom = new Mutex();
         }
 
         public WaitingRoom(Stack<Client> chairs)
         {
             _chairs = chairs;
+            _mutexRoom = new Mutex();
         }
 
-        //public WaitingRoom(List<Client> chairs, Semaphore semaphore)
-        //{
-        //    _chairs = chairs;
-        //    _semaphore = semaphore;
-        //}
-
-        //public Semaphore Semaphore { get => _semaphore; set => _semaphore = value; }
+        public Mutex MutexRoom { get => _mutexRoom; set => _mutexRoom = value; }
         internal Stack<Client> Chairs { get => _chairs; set => _chairs = value; }
     }
 }

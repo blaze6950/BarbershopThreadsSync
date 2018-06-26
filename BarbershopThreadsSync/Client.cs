@@ -35,8 +35,7 @@ namespace BarbershopThreadsSync
         }
 
         private void CheckBarber(Barbershop barbershop)
-        {
-            barbershop.Mutex.WaitOne();
+        {            
             Console.WriteLine("Новый клиент {0} проверяет парикмахера...", _name);
             Thread.Sleep(1000);
             if (barbershop.Barber.BarberState == BarberState.Sleep && barbershop.Armchair.CurrentClient == null)
@@ -50,8 +49,7 @@ namespace BarbershopThreadsSync
             else
             {
                 throw new Exception("Unknown error! NaN value BarberState variable!");
-            }
-            barbershop.Mutex.ReleaseMutex();
+            }            
         }
 
         private void WakeUpBarber(Barbershop barbershop)
@@ -96,6 +94,11 @@ namespace BarbershopThreadsSync
             Console.WriteLine("Клиент {0} подстриженный и довольный идет домой...", _name);
             Thread.Sleep(1000);
             barbershop.Armchair.CurrentClient = null;
+        }
+
+        public override string ToString()
+        {
+            return "№" + _name;
         }
     }
 }

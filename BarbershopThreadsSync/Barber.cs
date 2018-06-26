@@ -47,17 +47,14 @@ namespace BarbershopThreadsSync
         }
 
         public void DoWork(Barbershop barbershop)
-        {
-            barbershop.Mutex.WaitOne();
+        {            
             Console.WriteLine("Парикмахер начинает свою работу с клиентом {0}...", barbershop.Armchair.CurrentClient.Name);
             Thread.Sleep(5000);
-            barbershop.Armchair.CurrentClient.LeaveArmChair(barbershop);
-            barbershop.Mutex.ReleaseMutex();
+            barbershop.Armchair.CurrentClient.LeaveArmChair(barbershop);            
         }
 
         public void CheckWaitingRoom(Barbershop barbershop)
-        {
-            barbershop.Mutex.WaitOne();
+        {            
             if (barbershop.Armchair.CurrentClient == null)
             {                
                 Console.WriteLine("Парикмахер закончил работу с клиентом {0} и направляется в комнату ожидания за следующим клиентом...", barbershop.Armchair.CurrentClient?.Name);
@@ -74,8 +71,7 @@ namespace BarbershopThreadsSync
                     Thread.Sleep(1000);
                     _barberState = BarberState.Sleep;
                 }                
-            }
-            barbershop.Mutex.ReleaseMutex();
+            }            
         }
     }
 }
