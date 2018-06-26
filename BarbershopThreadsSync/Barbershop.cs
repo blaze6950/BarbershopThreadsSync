@@ -38,11 +38,11 @@ namespace BarbershopThreadsSync
 
         public void Working()
         {
+            Task.Factory.StartNew(() => Barber.DoActions(this));
             while (true)
             {
-                NewClient(ClientFactory.CreateNewClient());
-                Task.Factory.StartNew(() => Barber.DoActions(this));// bug
-                Thread.Sleep(5000);
+                NewClient(ClientFactory.CreateNewClient());                
+                Thread.Sleep(Ping.BigPing);
             }
         }
     }
